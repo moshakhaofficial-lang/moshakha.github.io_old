@@ -29,6 +29,7 @@ DirectoryIndex index.html
 # Cache control headers
 <IfModule mod_headers.c>
     <FilesMatch "\.(css|js|png|jpg|jpeg|gif|svg|webp|woff|woff2)$">
+        Header unset Cache-Control
         Header set Cache-Control "public, max-age=31536000, immutable"
         Header set X-Content-Type-Options "nosniff"
     </FilesMatch>
