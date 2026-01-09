@@ -1,29 +1,29 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize EmailJS with fallback
-    (function() {
+    (function () {
         try {
             emailjs.init("QNxBDwyqV0x4Udyrq"); // Your actual Public Key
         } catch (error) {
             console.log('EmailJS not configured yet. Using fallback.');
         }
     })();
-    
+
     const menuToggle = document.querySelector('.menu-toggle');
     const navLinks = document.querySelector('.nav-links');
-    
-    menuToggle.addEventListener('click', function() {
+
+    menuToggle.addEventListener('click', function () {
         navLinks.classList.toggle('active');
         menuToggle.textContent = navLinks.classList.contains('active') ? '✕' : '☰';
     });
-    
+
     // Close mobile menu when clicking on a link
     document.querySelectorAll('.nav-links a').forEach(link => {
-        link.addEventListener('click', function() {
+        link.addEventListener('click', function () {
             navLinks.classList.remove('active');
             menuToggle.textContent = '☰';
         });
     });
-    
+
     // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -38,19 +38,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
+
     // Form submission handler with EmailJS
     const contactForm = document.querySelector('.contact-form form');
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             // Get form data
             const name = this.querySelector('input[type="text"]').value;
             const email = this.querySelector('input[type="email"]').value;
             const phone = this.querySelector('input[type="tel"]').value;
             const message = this.querySelector('textarea').value;
-            
+
             // Check if EmailJS is configured
             if (typeof emailjs !== 'undefined' && emailjs.send) {
                 // Send email using EmailJS
@@ -61,13 +61,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     message: message,
                     to_email: 'moshakhaofficial@gmail.com'
                 };
-                
+
                 emailjs.send('service_gjpklr8', 'template_n0p3rdr', templateParams)
-                    .then(function(response) {
+                    .then(function (response) {
                         console.log('SUCCESS!', response.status, response.text);
                         showNotification('Thank you for your inquiry! We\'ll contact you soon.');
                         contactForm.reset();
-                    }, function(error) {
+                    }, function (error) {
                         console.log('FAILED...', error);
                         showNotification('Please complete EmailJS setup or contact us directly at moshakhaofficial@gmail.com');
                     });
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Form submitted:', { name, email, phone, message });
                 showNotification('Thank you! Please complete EmailJS setup or email us directly at moshakhaofficial@gmail.com');
                 contactForm.reset();
-                
+
                 // Optional: Open email client
                 const subject = encodeURIComponent('Contact Form Submission from OraeSkin Website');
                 const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nMessage: ${message}`);
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Notification function
     function showNotification(message) {
         const notification = document.createElement('div');
@@ -103,9 +103,9 @@ document.addEventListener('DOMContentLoaded', function() {
             font-family: 'Montserrat', sans-serif;
             animation: slideIn 0.3s ease;
         `;
-        
+
         document.body.appendChild(notification);
-        
+
         // Remove notification after 5 seconds
         setTimeout(() => {
             notification.style.animation = 'slideOut 0.3s ease';
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         }, 5000);
     }
-    
+
     // Add animation styles
     const style = document.createElement('style');
     style.textContent = `
@@ -141,14 +141,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     `;
     document.head.appendChild(style);
-    
+
     // Intersection Observer for scroll animations
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
     };
-    
-    const observer = new IntersectionObserver(function(entries) {
+
+    const observer = new IntersectionObserver(function (entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.style.opacity = '1';
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }, observerOptions);
-    
+
     // Observe elements for animation
     document.querySelectorAll('.ingredient-card, .product-card').forEach(el => {
         el.style.opacity = '0';
@@ -164,14 +164,15 @@ document.addEventListener('DOMContentLoaded', function() {
         el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
         observer.observe(el);
     });
-    
-    // Navbar scroll effect
+
+    // Navbar scroll effect with requestAnimationFrame
     let lastScroll = 0;
+    let ticking = false;
     const navbar = document.querySelector('.navbar');
-    
-    window.addEventListener('scroll', function() {
+
+    function updateNavbar() {
         const currentScroll = window.pageYOffset;
-        
+
         if (currentScroll > 100) {
             navbar.style.backgroundColor = 'rgba(245, 242, 237, 0.98)';
             navbar.style.boxShadow = '0 2px 30px rgba(0,0,0,0.1)';
@@ -179,10 +180,18 @@ document.addEventListener('DOMContentLoaded', function() {
             navbar.style.backgroundColor = 'rgba(245, 242, 237, 0.95)';
             navbar.style.boxShadow = '0 2px 20px rgba(0,0,0,0.05)';
         }
-        
+
         lastScroll = currentScroll;
+        ticking = false;
+    }
+
+    window.addEventListener('scroll', function () {
+        if (!ticking) {
+            window.requestAnimationFrame(updateNavbar);
+            ticking = true;
+        }
     });
-    
+
     // Luxury product data
     const products = [
         {
